@@ -273,7 +273,9 @@
                 </div>
             @endif
 
-            <div class="js-auth-fields" data-url="{{ route('loginSubmitRoute') }}">
+            <form method="POST" action="/login" class="js-auth-fields" data-url="/login">
+                @csrf
+
                 <div class="mb-3">
                     <label for="username" class="form-label">Username</label>
                     <input
@@ -299,8 +301,8 @@
                     >
                 </div>
 
-                <button type="button" class="submit-btn w-100 js-login-submit">Login</button>
-            </div>
+                <button type="submit" class="submit-btn w-100 js-login-submit">Login</button>
+            </form>
         </section>
     </div>
 

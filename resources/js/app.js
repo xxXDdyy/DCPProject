@@ -474,7 +474,11 @@ if ($) {
             });
         }
 
-        function submitLogin() {
+        function submitLogin(event) {
+            if (event) {
+                event.preventDefault();
+            }
+
             const $fields = $('.js-auth-fields');
             const $button = $('.js-login-submit');
             const defaultText = $button.text();
@@ -505,7 +509,11 @@ if ($) {
             });
         }
 
-        function submitPasswordChange() {
+        function submitPasswordChange(event) {
+            if (event) {
+                event.preventDefault();
+            }
+
             const $fields = $('.js-password-fields');
             const $button = $('.js-password-submit');
             const defaultText = $button.text();
@@ -612,19 +620,8 @@ if ($) {
             submitAjax($(this), {});
         });
 
-        $(document).on('click', '.js-login-submit', submitLogin);
-        $(document).on('keydown', '.js-auth-fields input', function (event) {
-            if (event.key === 'Enter') {
-                submitLogin();
-            }
-        });
-
-        $(document).on('click', '.js-password-submit', submitPasswordChange);
-        $(document).on('keydown', '.js-password-fields input', function (event) {
-            if (event.key === 'Enter') {
-                submitPasswordChange();
-            }
-        });
+        $(document).on('submit', '.js-auth-fields', submitLogin);
+        $(document).on('submit', '.js-password-fields', submitPasswordChange);
     });
 } else {
     document.addEventListener('DOMContentLoaded', function () {
@@ -696,13 +693,9 @@ if ($) {
                 }, loginButton, loginAnchor);
             };
 
-            loginButton.addEventListener('click', submitLogin);
-            loginFields.querySelectorAll('input').forEach(function (input) {
-                input.addEventListener('keydown', function (event) {
-                    if (event.key === 'Enter') {
-                        submitLogin();
-                    }
-                });
+            loginFields.addEventListener('submit', function (event) {
+                event.preventDefault();
+                submitLogin();
             });
         }
     });

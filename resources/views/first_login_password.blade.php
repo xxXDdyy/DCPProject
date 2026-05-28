@@ -153,7 +153,9 @@
             </div>
         @endif
 
-        <div class="js-password-fields" data-url="{{ route('firstPasswordUpdateRoute') }}">
+        <form method="POST" action="/password/change-first-login" class="js-password-fields" data-url="/password/change-first-login">
+            @csrf
+
             <div class="mb-3">
                 <label for="username" class="form-label">Username</label>
                 <input
@@ -201,8 +203,8 @@
                 >
             </div>
 
-            <button type="button" class="btn-submit js-password-submit">Change Password</button>
-        </div>
+            <button type="submit" class="btn-submit js-password-submit">Change Password</button>
+        </form>
 
         <p class="hint">Minimum 8 characters. Use a strong password for your account security.</p>
     </div>
