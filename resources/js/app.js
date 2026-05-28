@@ -626,4 +626,84 @@ if ($) {
             }
         });
     });
+} else {
+    document.addEventListener('DOMContentLoaded', function () {
+        function csrfToken() {
+            const token = document.querySelector('meta[name="csrf-token"]');
+            return token ? token.getAttribute('content') : '';
+        }
+
+        function showFallbackNotice(anchor, message) {
+            document.querySelectorAll('.js-ajax-error, .js-ajax-alert').forEach(function (element) {
+                element.remove();
+            });
+
+            const notice = document.createElement('div');
+            notice.className = 'notice notice-error js-ajax-error';
+            notice.textContent = message || 'Something went wrong. Please try again.';
+            anchor.insertAdjacentElement('afterend', notice);
+        }
+
+        function postJson(url, data, button, anchor) {
+            const defaultText = button.textContent;
+
+            button.disabled = true;
+            button.textContent = 'Logging in...';
+
+            fetch(url, {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken(),
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                body: JSON.stringify(data),
+            })
+                .then(function (response) {
+                    return response.json().catch(function () {
+                        return {};
+                    }).then(function (json) {
+                        if (!response.ok) {
+                            throw json;
+                        }
+
+                        return json;
+                    });
+                })
+                .then(function (response) {
+                    window.location.href = response.redirect || '/';
+                })
+                .catch(function (error) {
+                    showFallbackNotice(anchor, error.message);
+                })
+                .finally(function () {
+                    button.disabled = false;
+                    button.textContent = defaultText;
+                });
+        }
+
+        const loginFields = document.querySelector('.js-auth-fields');
+        const loginButton = document.querySelector('.js-login-submit');
+
+        if (loginFields && loginButton) {
+            const loginAnchor = document.querySelector('.form-subtitle') || loginFields;
+            const submitLogin = function () {
+                postJson(loginFields.dataset.url, {
+                    username: document.querySelector('#username')?.value || '',
+                    password: document.querySelector('#password')?.value || '',
+                }, loginButton, loginAnchor);
+            };
+
+            loginButton.addEventListener('click', submitLogin);
+            loginFields.querySelectorAll('input').forEach(function (input) {
+                input.addEventListener('keydown', function (event) {
+                    if (event.key === 'Enter') {
+                        submitLogin();
+                    }
+                });
+            });
+        }
+    });
 }
