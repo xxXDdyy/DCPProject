@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 
 class StudentController extends Controller
@@ -146,10 +147,20 @@ class StudentController extends Controller
                 'must_change_password' => true,
             ]);
 
-            $data['user_account_id'] = $user->id;
-            unset($data['username'], $data['password'], $data['email']);
+            $studentData = [
+                'fname' => $data['fname'],
+                'mname' => $data['mname'] ?? null,
+                'lname' => $data['lname'],
+                'contact_no' => $data['contact_no'],
+                'degree_id' => $data['degree_id'],
+                'user_account_id' => $user->id,
+            ];
 
-            Student::create($data);
+            if (Schema::hasColumn('students', 'email')) {
+                $studentData['email'] = $data['email'];
+            }
+
+            Student::create($studentData);
         });
 
         $msg = "Student is added successfully!";
@@ -208,13 +219,19 @@ class StudentController extends Controller
         ]);
 
         DB::transaction(function () use ($student, $data): void {
-            $student->update([
+            $studentData = [
                 'fname' => $data['fname'],
                 'mname' => $data['mname'] ?? null,
                 'lname' => $data['lname'],
                 'contact_no' => $data['contact_no'],
                 'degree_id' => $data['degree_id'],
-            ]);
+            ];
+
+            if (Schema::hasColumn('students', 'email')) {
+                $studentData['email'] = $data['email'];
+            }
+
+            $student->update($studentData);
 
             if ($student->userAccount) {
                 $student->userAccount->update([
