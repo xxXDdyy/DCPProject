@@ -1,0 +1,15 @@
+.git
+.env
+.env.*
+node_modules
+vendor
+public/build
+public/hot
+public/storage
+public/uploads
+storage/logs/*.log
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+database/database.sqlite
+Thumbs.db
